@@ -9,28 +9,36 @@ namespace SaveManager
     {
         internal static readonly Settings Instance = new();
 
+        public enum SavePresets { Hotkey, GameBase, Disabled };
+
         [Section("Mod Controls")]
+
         [Name("Toggle Mod")]
         [Description("Turn the mod on or off")]
-        public bool EnableMod                = true;
+        public bool EnableMod               = true;
 
         [Name("Save When Exiting Interiors")]
-        public bool BuildingExitEnabled      = false;
+        public bool BuildingExitEnabled     = false;
 
         [Name("Save Icon Enabled")]
-        public bool SaveIconEnabled          = true;
-
-        [Section("Hotkeys")]
-        [Name("Save")]
-        public KeyCode SaveKey               = KeyCode.F5;
-
-        [Name("Load")]
-        public KeyCode LoadKey               = KeyCode.F6;
+        public bool SaveIconEnabled         = true;
 
         [Section("Exit Save")]
-        [Name("Enable")]
-        public bool ExitSaveEnabled          = false;
 
+        [Name("Enable")]
+        public bool ExitSaveEnabled         = false;
+
+        [Section("Hotkeys")]
+
+        [Name("Preset")]
+        [Description("GameBase means to use the already set hotkey. Disabled means the hotkey wont work")]
+        public SavePresets SaveHotKey       = SavePresets.GameBase;
+
+        [Name("Save")]
+        public KeyCode SaveKey              = KeyCode.None;
+
+        [Name("Load")]
+        public KeyCode LoadKey              = KeyCode.None;
 
         protected override void OnChange(FieldInfo field, object? oldValue, object? newValue)
         {
@@ -54,9 +62,9 @@ namespace SaveManager
         {
             SetFieldVisible(nameof(BuildingExitEnabled), EnableMod);
             SetFieldVisible(nameof(SaveIconEnabled), EnableMod);
-            SetFieldVisible(nameof(SaveKey), EnableMod);
-            SetFieldVisible(nameof(LoadKey), false); //EnableMod); // not working atm
             SetFieldVisible(nameof(ExitSaveEnabled), EnableMod);
+            SetFieldVisible(nameof(SaveKey), EnableMod && SaveHotKey == SavePresets.Hotkey);
+            SetFieldVisible(nameof(LoadKey), false); //EnableMod); // not working atm
         }
 
         internal void OnLoad()

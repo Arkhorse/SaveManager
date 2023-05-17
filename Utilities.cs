@@ -11,7 +11,10 @@ namespace SaveManager
         internal static bool CanExitSave            = false;
         internal static bool ExitEnabled            = Settings.Instance.EnableMod && Settings.Instance.ExitSaveEnabled;
         internal static bool IsInside               = GameManager.GetWeatherComponent() != null && GameManager.GetWeatherComponent().IsIndoorEnvironment();
-        internal static bool OutsideEnabled         = Settings.Instance.ExitSaveOutside && IsInside;
+
+        #region ENUMS
+        public enum ConvertUnits { minutes, hours };
+        #endregion
 
         #region Save Utils
         /// <summary>
@@ -21,7 +24,18 @@ namespace SaveManager
         {
             if (Settings.Instance.EnableMod && Il2Cpp.InputManager.instance != null && !GameManager.IsStoryMode())
             {
-                if (KeyboardUtilities.InputManager.GetKeyDown(Settings.Instance.SaveKey)) GameManager.SaveGameAndDisplayHUDMessage();
+                if (Settings.Instance.SaveHotKey == Settings.SavePresets.Hotkey && KeyboardUtilities.InputManager.GetKeyDown(Settings.Instance.SaveKey))
+                {
+                    GameManager.SaveGameAndDisplayHUDMessage();
+                }
+                else if (Settings.Instance.SaveHotKey == Settings.SavePresets.GameBase && Il2Cpp.InputManager.GetQuickSavePressed(Il2Cpp.InputManager.m_CurrentContext))
+                {
+                    GameManager.SaveGameAndDisplayHUDMessage();
+                }
+                else if (Settings.Instance.SaveHotKey == Settings.SavePresets.Disabled)
+                {
+                    return;
+                }
             }
         }
 
@@ -60,7 +74,6 @@ namespace SaveManager
         {
             if (ExitEnabled)
             {
-                if (OutsideEnabled) return false;
                 return true;
             }
             return false;
