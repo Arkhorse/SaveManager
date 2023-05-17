@@ -82,13 +82,24 @@ namespace SaveManager
 
         #region Utils
         /// <summary>
-        /// Simply converts minutes to seconds
+        /// Simply converts the input to seconds
         /// </summary>
-        /// <param name="minutes">The int value for the minutes you want to convert</param>
-        /// <returns>And int representing the seconds</returns>
-        internal static int GetMinutesToSeconds(int minutes)
+        /// <param name="convert">enum <c>this.ConvertUnits</c></param>
+        /// <param name="units">int of number of units you want to convert</param>
+        /// <returns>converted int representing the seconds from the units</returns>
+        public static int GetInputToSeconds(ConvertUnits convert, int units)
         {
-            return minutes * 60;
+            #pragma warning disable IDE0066
+            switch (convert)
+            {
+                case ConvertUnits.hours:
+                    return units * 60 * 60;
+                case ConvertUnits.minutes:
+                    return units * 60;
+                default:
+                    return units;
+            }
+            #pragma warning restore IDE0066
         }
         #endregion
     }
