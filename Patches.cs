@@ -15,15 +15,6 @@ namespace SaveManager
         }
     }
 
-    [HarmonyPatch(typeof(SaveGameSystem), nameof(SaveGameSystem.SaveGame))]
-    internal class SaveGameSystem_SaveGame
-    {
-        private static void PostFix()
-        {
-            if (Settings.Instance.EnableMod) Utilities.AutosaveTimer(Utilities.AutosaveHandles.reset);
-        }
-    }
-
     [HarmonyPatch(typeof(Panel_PauseMenu), nameof(Panel_PauseMenu.DoQuitGame))]
     internal class Panel_PauseMenu_DoQuitGame
     {

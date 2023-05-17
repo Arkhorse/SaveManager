@@ -31,26 +31,6 @@ namespace SaveManager
         [Name("Enable")]
         public bool ExitSaveEnabled          = false;
 
-        [Section("Autosave")]
-        [Name("Enable")]
-        public bool AutosaveEnabled          = false;
-
-        [Name("Only Outside")]
-        public bool ExitSaveOutside = false;
-
-        [Name("Time Between Autosaves")]
-        [Description("Time in minutes")]
-        [Slider(0, 120)]
-        public int AutosaveSeconds           = 0;
-
-        protected override void OnConfirm()
-        {
-            base.OnConfirm();
-            if (!AutosaveEnabled)
-            {
-                Utilities.AutosaveTimer(Utilities.AutosaveHandles.StopAndReset);
-            }
-        }
 
         protected override void OnChange(FieldInfo field, object? oldValue, object? newValue)
         {
@@ -59,10 +39,7 @@ namespace SaveManager
                 field.Name == nameof(SaveIconEnabled)       ||
                 field.Name == nameof(SaveKey)               ||
                 field.Name == nameof(LoadKey)               ||
-                field.Name == nameof(ExitSaveEnabled)       ||
-                field.Name == nameof(ExitSaveOutside)       ||
-                field.Name == nameof(AutosaveEnabled)       ||
-                field.Name == nameof(AutosaveSeconds)
+                field.Name == nameof(ExitSaveEnabled)       
                 )
             {
                 RefreshFieldVisibility();
@@ -80,9 +57,6 @@ namespace SaveManager
             SetFieldVisible(nameof(SaveKey), EnableMod);
             SetFieldVisible(nameof(LoadKey), false); //EnableMod); // not working atm
             SetFieldVisible(nameof(ExitSaveEnabled), EnableMod);
-            SetFieldVisible(nameof(ExitSaveOutside), EnableMod && ExitSaveEnabled);
-            SetFieldVisible(nameof(AutosaveEnabled), EnableMod);
-            SetFieldVisible(nameof(AutosaveSeconds), EnableMod && AutosaveEnabled);
         }
 
         internal void OnLoad()
