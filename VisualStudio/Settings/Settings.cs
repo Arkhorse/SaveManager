@@ -3,6 +3,7 @@
     public class Settings : JsonModSettings
     {
         internal static readonly Settings Instance = new();
+        public enum HotkeyPreset { Vanilla, Custom }
 
         [Section("Mod Controls")]
 
@@ -11,9 +12,13 @@
         public bool EnableMod                = true;
 
         [Name("Save Icon Enabled")]
+        [Description("Allows you to disable the 'Saving' icon on the right of the screen")]
         public bool SaveIconEnabled          = true;
 
         [Section("Hotkeys")]
+
+        [Name("Hotkey Preset")]
+        public HotkeyPreset hotkeyPreset = HotkeyPreset.Vanilla;
 
         [Name("Save")]
         public KeyCode SaveKey               = KeyCode.F5;
@@ -21,7 +26,7 @@
         [Name("Load")]
         public KeyCode LoadKey               = KeyCode.F6;
 
-        [Section("Autosave")]
+        //[Section("Autosave")]
 
         [Name("Enabled")]
         public bool AutoSaveEnabled = false;
@@ -36,37 +41,31 @@
 
             if (Instance.AutoSaveEnabled)
             {
-                InterfaceManager.GetPanel<Panel_OptionsMenu>().State.m_AutosaveMinutes = Instance.AutoSaveTime;
+                Panel_OptionsMenu OptionsMenu = InterfaceManager.GetPanel<Panel_OptionsMenu>();
+                OptionsMenu.State.m_AutosaveMinutes = Instance.AutoSaveTime;
+                OptionsMenu.ApplyAutosaveMinutes();
             }
         }
 
         protected override void OnChange(FieldInfo field, object? oldValue, object? newValue)
         {
-            if (field.Name == nameof(EnableMod)             ||
-                field.Name == nameof(SaveIconEnabled)       ||
-                field.Name == nameof(SaveKey)               ||
-                field.Name == nameof(LoadKey)
-                )
-            {
-                Refresh();
-            }
             if ( InterfaceManager.GetPanel<Panel_SaveIcon>() != null && EnableMod && field.Name == nameof(SaveIconEnabled) )
             {
                 InterfaceManager.GetPanel<Panel_SaveIcon>().Enable(SaveIconEnabled);
             }
         }
 
-        internal void Refresh()
+        internal void DisableSettings()
         {
-            SetFieldVisible(nameof(SaveIconEnabled), EnableMod);
-            SetFieldVisible(nameof(SaveKey), EnableMod);
-            SetFieldVisible(nameof(LoadKey), EnableMod); // not working atm
+            SetFieldVisible(nameof(AutoSaveEnabled), false);
+            SetFieldVisible(nameof(AutoSaveTime), false);
+            SetFieldVisible(nameof(LoadKey), false);
         }
 
         internal static void OnLoad()
         {
             Instance.AddToModSettings(BuildInfo.GUIName);
-            Instance.Refresh();
+            Instance.DisableSettings();
             Instance.RefreshGUI();
         }
     }
