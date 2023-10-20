@@ -2,24 +2,49 @@
 {
     public class SceneUtilities
     {
-        public static bool IsScenePlayable(string? sceneName = null)
+        public static bool IsSceneEmpty(string? sceneName = null)
         {
-            string currentScene = string.Empty;
-            if (sceneName == null)
-            {
-                currentScene = GameManager.m_ActiveScene;
-            }
-            else
-            {
-                currentScene = sceneName;
-            }
+            sceneName ??= GameManager.m_ActiveScene;
 
-            if (!(currentScene == "Empty" || currentScene == "Boot" || currentScene.StartsWith("MainMenu", StringComparison.InvariantCultureIgnoreCase)))
+            if (sceneName.Contains("Empty", StringComparison.InvariantCultureIgnoreCase))
             {
                 return true;
             }
-
             return false;
+        }
+
+        public static bool IsSceneBoot(string? sceneName = null)
+        {
+            sceneName ??= GameManager.m_ActiveScene;
+
+            if (sceneName.Contains("Boot", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public static bool IsSceneMenu(string? sceneName = null)
+        {
+            sceneName ??= GameManager.m_ActiveScene;
+
+            if (sceneName.StartsWith("MainMenu", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public static bool IsScenePlayable(string? sceneName = null)
+        {
+            sceneName ??= GameManager.m_ActiveScene;
+
+            if (IsSceneEmpty(sceneName) || IsSceneBoot(sceneName) || IsSceneMenu(sceneName))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -29,20 +54,44 @@
         /// <returns></returns>
         public static bool IsSceneBase(string? sceneName = null)
         {
-            string currentScene = string.Empty;
+            sceneName ??= GameManager.m_ActiveScene;
 
-            if (sceneName == null)
-            {
-                currentScene = GameManager.m_ActiveScene;
-            }
-            if (sceneName != null)
-            {
-                currentScene = sceneName;
-            }
-
-            bool RegionOrZone = currentScene.Contains("Region", StringComparison.InvariantCultureIgnoreCase) || currentScene.Contains("Zone", StringComparison.InvariantCultureIgnoreCase);
+            bool RegionOrZone = sceneName.Contains("Region", StringComparison.InvariantCultureIgnoreCase) || sceneName.Contains("Zone", StringComparison.InvariantCultureIgnoreCase);
 
             return RegionOrZone;
+        }
+
+        public static bool IsSceneSandbox(string? sceneName = null)
+        {
+            sceneName ??= GameManager.m_ActiveScene;
+
+            if (sceneName.Contains("SANDBOX", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public static bool IsSceneDLC01(string? sceneName = null)
+        {
+            sceneName ??= GameManager.m_ActiveScene;
+
+            if (sceneName.Contains("DLC01", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public static bool IsSceneDarkWalker(string? sceneName = null)
+        {
+            sceneName ??= GameManager.m_ActiveScene;
+
+            if (sceneName.Contains("DARKWALKER", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return false;
+            }
+            return true;
         }
 
         /// <summary>
@@ -52,20 +101,14 @@
         /// <returns></returns>
         public static bool IsSceneAdditive(string? sceneName = null)
         {
-            string currentScene = string.Empty;
+            sceneName ??= GameManager.m_ActiveScene;
 
-            if (sceneName == null)
+            if (IsSceneSandbox(sceneName) || IsSceneDLC01(sceneName) || IsSceneDarkWalker(sceneName))
             {
-                currentScene = GameManager.m_ActiveScene;
-            }
-            if (sceneName != null)
-            {
-                currentScene = sceneName;
+                return false;
             }
 
-            bool IsAdditiveScene = currentScene.Contains("SANDBOX", StringComparison.InvariantCultureIgnoreCase) || currentScene.EndsWith("DARKWALKER", StringComparison.InvariantCultureIgnoreCase) || currentScene.EndsWith("DLC01", StringComparison.InvariantCultureIgnoreCase);
-
-            return IsAdditiveScene;
+            return true;
         }
     }
 }
