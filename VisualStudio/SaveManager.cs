@@ -7,5 +7,20 @@
         {
             Settings.OnLoad();
         }
+
+        public override void OnUpdate()
+        {
+            base.OnUpdate();
+
+            //if (InputManager.GetKeyDown(InputManager.m_CurrentContext, Settings.Instance.LoadKey))
+            //{
+            //    CommonUtilities.OnLoadKey();
+            //}
+
+            if (InputManager.GetKeyDown(InputManager.m_CurrentContext, Settings.Instance.SaveKey))
+            {
+                CommonUtilities.OnSaveKey();
+            }
+        }
     }
 }
