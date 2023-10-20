@@ -1,6 +1,4 @@
-﻿using MelonLoader;
-using System.Reflection;
-using BuildInfo = SaveManager.BuildInfo;
+﻿using BuildInfo = SaveManager.BuildInfo;
 
 [assembly: AssemblyTitle(BuildInfo.Name)]
 [assembly: AssemblyDescription(BuildInfo.Description)]
@@ -12,5 +10,10 @@ using BuildInfo = SaveManager.BuildInfo;
 
 [assembly: AssemblyVersion(BuildInfo.Version)]
 [assembly: AssemblyFileVersion(BuildInfo.Version)]
+
 [assembly: MelonInfo(typeof(SaveManager.SaveManager), BuildInfo.Name, BuildInfo.Version, BuildInfo.Author, BuildInfo.DownloadLink)]
 [assembly: MelonGame("Hinterland", "TheLongDark")]
+
+[assembly: VerifyLoaderVersion(BuildInfo.MelonLoaderVersion, true)]
+[assembly: MelonPriority(BuildInfo.Priority)]
+[assembly: MelonIncompatibleAssemblies(null)]
