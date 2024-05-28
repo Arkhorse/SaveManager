@@ -11,9 +11,9 @@
 [assembly: AssemblyVersion(BuildInfo.Version)]
 [assembly: AssemblyFileVersion(BuildInfo.Version)]
 
-[assembly: MelonInfo(typeof(SaveManager.SaveManager), BuildInfo.Name, BuildInfo.Version, BuildInfo.Author, BuildInfo.DownloadLink)]
+[assembly: MelonInfo(typeof(SaveManager.Main), BuildInfo.Name, BuildInfo.Version, BuildInfo.Author, BuildInfo.DownloadLink)]
 [assembly: MelonGame("Hinterland", "TheLongDark")]
 
 [assembly: VerifyLoaderVersion(BuildInfo.MelonLoaderVersion, true)]
 [assembly: MelonPriority(BuildInfo.Priority)]
-[assembly: MelonIncompatibleAssemblies(null)]
+[assembly: MelonIncompatibleAssemblies("AutoSave")]
