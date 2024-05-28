@@ -1,16 +1,38 @@
-﻿using System.Collections;
+﻿global using SaveManager.Utilities.Logger;
+global using SaveManager.Utilities.Logger.Enums;
+
+using System.Collections;
 
 using Il2CppInterop.Runtime.Attributes;
 
 using MelonLoader;
 
+
 namespace SaveManager
 {
-	public class SaveManager : MelonMod
+	public class Main : MelonMod
 	{
-		public static string CurrentSaveName { get; set; } = string.Empty;
+		public static ComplexLogger<Main> Logger = new();
 		public static object coroutine;
-		public static bool saving;
+
+		public static KeyCode SaveKeyCode
+		{
+			get
+			{
+				if (Settings.Instance.Preset == Settings.HotkeyPreset.Vanilla) return KeyCode.F5;
+				else return Settings.Instance.SaveKey;
+			}
+		}
+
+		public static KeyCode LoadKeyCode
+		{
+			get
+			{
+				if (Settings.Instance.Preset == Settings.HotkeyPreset.Vanilla) return KeyCode.F6;
+				else return Settings.Instance.LoadKey;
+			}
+		}
+
 		public override void OnInitializeMelon()
 		{
 			Settings.OnLoad();
@@ -20,7 +42,13 @@ namespace SaveManager
 		{
 			if (!Settings.Instance.EnableMod)
 			{
-				if (coroutine != null) MelonCoroutines.Stop(coroutine);
+				UpdateAutosave(false);
+				return;
+			}
+			if (!Settings.Instance.AutoSaveEnabled)
+			{
+				Logger.Log("Autosave is not enabled, stopping Coroutine if applicable", FlaggedLoggingLevel.Debug);
+				UpdateAutosave(false);
 				return;
 			}
 
@@ -28,36 +56,60 @@ namespace SaveManager
 			{
 				if (Settings.Instance.AutoSaveEnabled)
 				{
-					coroutine ??= MelonCoroutines.Start(AutoSave());
+					UpdateAutosave(true);
 				}
 
-				if (!Settings.Instance.AutoSaveEnabled)
+				if (InputManager.GetKeyDown(InputManager.m_CurrentContext, SaveKeyCode))
 				{
-					MelonLogger.Msg("Autosave is not enabled, stopping Coroutine if applicable");
-					if (coroutine != null) MelonCoroutines.Stop(coroutine);
-				}
-				if (InputManager.GetKeyDown(InputManager.m_CurrentContext, Settings.Instance.SaveKey))
-				{
-					GameManager.SaveGameAndDisplayHUDMessage();
+					SAVE();
 				}
 
-				if (InputManager.GetKeyDown(InputManager.m_CurrentContext, Settings.Instance.LoadKey))
+				if (InputManager.GetKeyDown(InputManager.m_CurrentContext, LoadKeyCode))
 				{
-					SaveSlotInfo ssi = SaveGameSystem.GetNewestSaveSlotForActiveGame();
-					if (ssi == null) return;
-
-					GameManager.LoadSaveGameSlot(ssi);
+					LOAD();
 				}
 			}
+		}
+
+		public static void LOAD()
+		{
+			SaveSlotInfo ssi = SaveGameSystem.GetNewestSaveSlotForActiveGame();
+			if (!GameManager.AllowedToLoadActiveGame())
+			{
+				Logger.Log($"Not allowed to load active game, {ssi.m_SaveSlotName}", FlaggedLoggingLevel.Debug);
+				return;
+			}
+
+			if (ssi == null) return;
+
+			GameManager.LoadSaveGameSlot(ssi);
 		}
 
 		public static void SAVE()
 		{
 			if (!GameManager.IsMainMenuActive())
 			{
+				if (SaveGameSystem.IsRestoreInProgress()) return;
 				GameManager.SaveGameAndDisplayHUDMessage();
-				MelonLogger.Msg("Autosave occured");
 			}
+		}
+
+		public static void UpdateAutosave(bool enabled)
+		{
+			if (enabled)
+			{
+				coroutine ??= MelonCoroutines.Start(AutoSave());
+			}
+			else
+			{
+				if (coroutine != null) MelonCoroutines.Stop(coroutine);
+			}
+		}
+
+		public static void RestartAutosave()
+		{
+			UpdateAutosave(false);
+			UpdateAutosave(true);
 		}
 
 		public static IEnumerator AutoSave()
@@ -65,7 +117,7 @@ namespace SaveManager
 			yield return new WaitForSecondsRealtime(Settings.Instance.AutoSaveTime * 60);
 			SAVE();
 
-			MelonLogger.Msg($"Autosave completed with time of {Settings.Instance.AutoSaveTime}");
+			Logger.Log($"Autosave completed with time of {Settings.Instance.AutoSaveTime}", FlaggedLoggingLevel.Debug);
 			yield break;
 		}
 	}
