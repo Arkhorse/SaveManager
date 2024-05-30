@@ -49,7 +49,6 @@ namespace SaveManager
 			{
 				Logger.Log("Autosave is not enabled, stopping Coroutine if applicable", FlaggedLoggingLevel.Debug);
 				UpdateAutosave(false);
-				return;
 			}
 
 			if (!GameManager.IsMainMenuActive())
