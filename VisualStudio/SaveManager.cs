@@ -83,23 +83,48 @@ namespace SaveManager
 
 		public static void LOAD()
 		{
-			SaveSlotInfo ssi = SaveGameSystem.GetNewestSaveSlotForActiveGame();
-			if (!GameManager.AllowedToLoadActiveGame())
+			Logger.Log($"LOAD Triggered", FlaggedLoggingLevel.Debug);
+
+			SaveSlotInfo? ssi = SaveGameSystem.GetNewestSaveSlotForActiveGame();
+
+			if (ssi == null)
+			{
+				Logger.Log($"ssi == null", FlaggedLoggingLevel.Debug);
+				return;
+			}
+			else Logger.Log($"ssi was not null", FlaggedLoggingLevel.Debug);
+
+			if (!AllowedToLoad())
 			{
 				Logger.Log($"Not allowed to load active game, {ssi.m_SaveSlotName}", FlaggedLoggingLevel.Debug);
 				return;
 			}
+			else Logger.Log($"Allowed to save", FlaggedLoggingLevel.Debug);
 
-			if (ssi == null) return;
+			if (Settings.Instance.AlternativeLoad)
+			{
+				Logger.Log($"Using alternative load", FlaggedLoggingLevel.Debug);
+
+				GameManager.LoadSaveGameSlot(ssi.m_SaveSlotName, ssi.m_SaveChangelistVersion);
+
+				return;
+			}
 
 			GameManager.LoadSaveGameSlot(ssi);
 		}
 
 		public static void SAVE()
 		{
+			Logger.Log($"SAVE Triggered", FlaggedLoggingLevel.Debug);
+
 			if (!GameManager.IsMainMenuActive())
 			{
-				if (SaveGameSystem.IsRestoreInProgress()) return;
+				Logger.Log($"Is not in main menu", FlaggedLoggingLevel.Debug);
+				if (SaveGameSystem.IsRestoreInProgress())
+				{
+					Logger.Log($"SaveGameSystem.IsRestoreInProgress() == true", FlaggedLoggingLevel.Debug);
+					return;
+				}
 				GameManager.SaveGameAndDisplayHUDMessage();
 			}
 		}
@@ -108,10 +133,12 @@ namespace SaveManager
 		{
 			if (enabled)
 			{
+				Logger.Log($"Autosave Enabled, starting Coroutine if not already", FlaggedLoggingLevel.Trace);
 				coroutine ??= MelonCoroutines.Start(AutoSave());
 			}
 			else
 			{
+				Logger.Log($"Autosave Disabled, stopping Coroutine if already running", FlaggedLoggingLevel.Trace);
 				if (coroutine != null) MelonCoroutines.Stop(coroutine);
 			}
 		}
@@ -124,11 +151,13 @@ namespace SaveManager
 
 		public static IEnumerator AutoSave()
 		{
+			yield return null;
 			yield return new WaitForSecondsRealtime(Settings.Instance.AutoSaveTime * 60);
 			SAVE();
 
-			Logger.Log($"Autosave completed with time of {Settings.Instance.AutoSaveTime}", FlaggedLoggingLevel.Debug);
-			yield break;
+			Logger.Log($"Autosave completed with time of {Settings.Instance.AutoSaveTime}", FlaggedLoggingLevel.Trace);
+
+			InterfaceManager.GetPanel<Panel_PauseMenu>().OnDone();
 		}
 	}
 }
