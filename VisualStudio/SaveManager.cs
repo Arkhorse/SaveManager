@@ -47,7 +47,6 @@ namespace SaveManager
 			}
 			if (!Settings.Instance.AutoSaveEnabled)
 			{
-				Logger.Log("Autosave is not enabled, stopping Coroutine if applicable", FlaggedLoggingLevel.Debug);
 				UpdateAutosave(false);
 			}
 
