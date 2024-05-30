@@ -69,6 +69,18 @@ namespace SaveManager
 			}
 		}
 
+		public static bool AllowedToLoad()
+		{
+			if (InterfaceManager.GetPanel<Panel_PauseMenu>().IsEnabled() && InterfaceManager.IsPanelEnabled<Panel_ChallengeComplete>()) return false;
+			if (GameManager.GetPlayerAnimationComponent().GetState() == PlayerAnimation.State.AnimatedInteraction) return false;
+			if (GameManager.GetPlayerManagerComponent().PlayerIsClimbing() && GameManager.GetPlayerClimbRopeComponent().IsSlipping) return false;
+			if (InterfaceManager.GetPanel<Panel_Loading>().IsEnabled()) return false;
+			if (InterfaceManager.GetPanel<Panel_SaveIcon>().IsIconVisible()) return false;
+			if (GameManager.m_DisableSaveLoad) return false;
+
+			return true;
+		}
+
 		public static void LOAD()
 		{
 			SaveSlotInfo ssi = SaveGameSystem.GetNewestSaveSlotForActiveGame();
