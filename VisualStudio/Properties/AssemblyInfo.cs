@@ -16,4 +16,4 @@
 
 [assembly: VerifyLoaderVersion(BuildInfo.MelonLoaderVersion, true)]
 [assembly: MelonPriority(BuildInfo.Priority)]
-[assembly: MelonIncompatibleAssemblies("AutoSave")]
+[assembly: MelonIncompatibleAssemblies("AutoSave", "IncreaseSaveSlotLimit")]
