@@ -1,5 +1,4 @@
-﻿global using SaveManager.Utilities.Logger;
-global using SaveManager.Utilities.Logger.Enums;
+﻿global using ComplexLogger;
 
 using System.Collections;
 
