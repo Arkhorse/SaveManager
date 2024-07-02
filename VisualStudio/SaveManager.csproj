@@ -17,7 +17,7 @@
 		<!-- This should point to wherever your games primary EXE is -->
 		<TheLongDarkPath>O:\SteamLibrary\steamapps\common\TheLongDark</TheLongDarkPath>
 		<ReleaseFolderPath>P:\Modding\The Long Dark\MyMods\SaveManager\Release</ReleaseFolderPath>
-		<ModLibraries>P:\Modding\The Long Dark\!! Libraries</ModLibraries>
+		<ModLibraries>P:\Modding\The Long Dark\Libraries</ModLibraries>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -38,10 +38,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Reference Include="KeyboardUtilities">
-	    <HintPath>$(ModLibraries)\KeyboardUtilities.dll</HintPath>
-		  <Private>false</Private>
-	  </Reference>
+		<Reference Include="ComplexLogger">
+			<HintPath>$(ModLibraries)\ComplexLogger.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="KeyboardUtilities">
+			<HintPath>$(ModLibraries)\KeyboardUtilities.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
 	</ItemGroup>
 
 	<!-- This is a build event. It will copy your dll to the currently defined TheLongDarkPath's Mods folder -->
