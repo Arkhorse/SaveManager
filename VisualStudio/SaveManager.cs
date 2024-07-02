@@ -49,12 +49,14 @@ namespace SaveManager
 				UpdateAutosave(false);
 			}
 
+			// prevent the keys from actually working while an interface is open
+			if (InterfaceManager.IsOverlayActiveCached()) return;
+			// Incase the above doesnt include the pause screen
+			if (GameManager.m_IsPaused) return;
+
 			if (!GameManager.IsMainMenuActive())
 			{
-				if (Settings.Instance.AutoSaveEnabled)
-				{
-					UpdateAutosave(true);
-				}
+				UpdateAutosave(Settings.Instance.AutoSaveEnabled);
 
 				if (InputManager.GetKeyDown(InputManager.m_CurrentContext, SaveKeyCode))
 				{
@@ -68,16 +70,16 @@ namespace SaveManager
 			}
 		}
 
+		public static void UpdateSaveSlotLimit(int limit) => SaveGameSlots.MAX_SAVESLOTS = limit;
+
 		public static bool AllowedToLoad()
 		{
-			if (InterfaceManager.GetPanel<Panel_PauseMenu>().IsEnabled() && InterfaceManager.IsPanelEnabled<Panel_ChallengeComplete>()) return false;
-			if (GameManager.GetPlayerAnimationComponent().GetState() == PlayerAnimation.State.AnimatedInteraction) return false;
-			if (GameManager.GetPlayerManagerComponent().PlayerIsClimbing() && GameManager.GetPlayerClimbRopeComponent().IsSlipping) return false;
-			if (InterfaceManager.GetPanel<Panel_Loading>().IsEnabled()) return false;
-			if (InterfaceManager.GetPanel<Panel_SaveIcon>().IsIconVisible()) return false;
-			if (GameManager.m_DisableSaveLoad) return false;
-
-			return true;
+			return !(InterfaceManager.GetPanel<Panel_PauseMenu>().IsEnabled() && InterfaceManager.IsPanelEnabled<Panel_ChallengeComplete>())
+				&& !(GameManager.GetPlayerAnimationComponent().GetState() == PlayerAnimation.State.AnimatedInteraction)
+				&& !(GameManager.GetPlayerManagerComponent().PlayerIsClimbing() && GameManager.GetPlayerClimbRopeComponent().IsSlipping)
+				&& !InterfaceManager.GetPanel<Panel_Loading>().IsEnabled()
+				&& !(InterfaceManager.GetPanel<Panel_SaveIcon>().IsIconVisible() || GameManager.SaveShouldBePending())
+				&& !GameManager.m_DisableSaveLoad;
 		}
 
 		public static void LOAD()
@@ -86,13 +88,6 @@ namespace SaveManager
 
 			SaveSlotInfo? ssi = SaveGameSystem.GetNewestSaveSlotForActiveGame();
 
-			if (ssi == null)
-			{
-				Logger.Log($"ssi == null", FlaggedLoggingLevel.Debug);
-				return;
-			}
-			else Logger.Log($"ssi was not null", FlaggedLoggingLevel.Debug);
-
 			if (!AllowedToLoad())
 			{
 				Logger.Log($"Not allowed to load active game, {ssi.m_SaveSlotName}", FlaggedLoggingLevel.Debug);
@@ -100,14 +95,12 @@ namespace SaveManager
 			}
 			else Logger.Log($"Allowed to save", FlaggedLoggingLevel.Debug);
 
-			if (Settings.Instance.AlternativeLoad)
+			if (ssi == null)
 			{
-				Logger.Log($"Using alternative load", FlaggedLoggingLevel.Debug);
-
-				GameManager.LoadSaveGameSlot(ssi.m_SaveSlotName, ssi.m_SaveChangelistVersion);
-
+				Logger.Log($"ssi == null", FlaggedLoggingLevel.Debug);
 				return;
 			}
+			else Logger.Log($"ssi was not null", FlaggedLoggingLevel.Debug);
 
 			GameManager.LoadSaveGameSlot(ssi);
 		}
