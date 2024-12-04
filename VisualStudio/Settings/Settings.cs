@@ -39,7 +39,7 @@
 		[Name("Time in minutes")]
 		[Description("Set this to how long you want the autosave to wait between saves. A value of 0 disables the autosave")]
 		[Slider(0,60,121)]
-		public int AutoSaveTime					= 15;
+		public float AutoSaveTime					= 15.0f;
 
 		protected override void OnChange(FieldInfo field, object? oldValue, object? newValue)
 		{
