@@ -15,10 +15,10 @@
 		[Description("Allows you to disable the 'Saving' icon on the right of the screen")]
 		public bool SaveIconEnabled				= true;
 
-		[Name("Maximum Save Slots")]
-		[Description("WARNING: Removing this mod after changing this value may result in lost saves. Use at your own risk. Vanilla = 25")]
-		[Slider(25, 999)]
-		public int MAXSAVESLOTS					= 25;
+		//[Name("Maximum Save Slots")]
+		//[Description("WARNING: Removing this mod after changing this value may result in lost saves. Use at your own risk. Vanilla = 25")]
+		//[Slider(25, 999)]
+		//public int MAXSAVESLOTS					= 25;
 
 		[Section("Hotkeys")]
 
@@ -38,14 +38,14 @@
 
 		[Name("Time in minutes")]
 		[Description("Set this to how long you want the autosave to wait between saves. A value of 0 disables the autosave")]
-		[Slider(0,60,61)]
+		[Slider(0,60,121)]
 		public int AutoSaveTime					= 15;
 
 		protected override void OnChange(FieldInfo field, object? oldValue, object? newValue)
 		{
 			if (field.Name == nameof(EnableMod) || field.Name == nameof(AutoSaveEnabled))
 			{
-				Main.UpdateAutosave(false);
+				Main.UpdateAutosave(AutoSaveEnabled);
 			}
 			if ( InterfaceManager.GetPanel<Panel_SaveIcon>() != null && EnableMod && field.Name == nameof(SaveIconEnabled) )
 			{
@@ -60,13 +60,18 @@
 				}
 				Main.RestartAutosave();
 			}
+			if (field.Name == nameof(Preset))
+			{
+				SetFieldVisible(nameof(SaveKey), Instance.Preset == HotkeyPreset.Custom);
+				SetFieldVisible(nameof(LoadKey), Instance.Preset == HotkeyPreset.Custom);
+			}
 		}
 
-		protected override void OnConfirm()
-		{
-			base.OnConfirm();
-			Main.UpdateSaveSlotLimit(Instance.MAXSAVESLOTS);
-		}
+		//protected override void OnConfirm()
+		//{
+		//	base.OnConfirm();
+		//	Main.UpdateSaveSlotLimit(Instance.MAXSAVESLOTS);
+		//}
 
 		internal static void OnLoad()
 		{
