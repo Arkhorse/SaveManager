@@ -70,7 +70,8 @@ namespace SaveManager
 			}
 		}
 
-		public static void UpdateSaveSlotLimit(int limit) => SaveGameSlots.MAX_SAVESLOTS = limit;
+		// Removed in 2.33. Currently dont know if there is another option
+		//public static void UpdateSaveSlotLimit(int limit) => SaveGameSlots.MAX_SAVESLOTS = limit;
 
 		public static bool AllowedToLoad()
 		{
